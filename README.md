@@ -116,7 +116,7 @@ console.log(gics.level(2) == gics.industryGroup); // true
 console.log(gics.level(3) == gics.industry); // true
 console.log(gics.level(4) == gics.subIndustry); // true
 ```
-### children()
+### children
 #### Description
 Gets all the child level elements from this GICS level.
 For example, for a Sector level GICS, it will return all Industry Groups in that Sector.
