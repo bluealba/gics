@@ -5,8 +5,8 @@
 [![npm](https://img.shields.io/npm/dt/gics.svg)](https://npmjs.org/package/gics)
 [![Coverage Status](https://coveralls.io/repos/github/bluealba/gics/badge.svg?branch=master)](https://coveralls.io/github/bluealba/gics?branch=master)
 
-This library provides a way to parse, manipulate and analyze GICS codes.
-GICS (Global Industry Classification Standard) is a classification system by MSCI (TODO: Insert wikipedia link)
+This library provides a way to parse, manipulate and analyze [GICS](https://en.wikipedia.org/wiki/Global_Industry_Classification_Standard) codes.
+GICS (Global Industry Classification Standard) is a classification system by [MSCI](https://www.msci.com/gics)
 
 ## Installation
 ```
