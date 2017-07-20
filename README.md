@@ -1,4 +1,7 @@
-## GICS
+# GICS
+
+[![Build Status](https://travis-ci.org/bluealba/gics.svg?branch=master)](https://travis-ci.org/bluealba/gics)
+
 This library provides a way to parse, manipulate and analyze GICS codes.
 GICS (Global Industry Classification Standard) is a classification system by MSCI (TODO: Insert wikipedia link)
 
