@@ -21,7 +21,7 @@ To wrap a string representing a GICS code, just build a new instance of GICS pas
 const GICS = require("gics");
 
 let validSectorLevelGICS = new GICS("10");
-console.log(gics.sector) // "Energy"
+console.log(validSectorLevelGICS.sector.name) // "Energy"
 
 let validFullGICS = new GICS("10101010");
 console.log(validFullGICS.sector.name) // "Energy"
