@@ -1,3 +1,3 @@
 "use strict";
 
-module.exports = require("./lib/GICS");
+module.exports = require("./dist/GICS");

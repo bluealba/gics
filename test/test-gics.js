@@ -1,6 +1,6 @@
 "use strict";
 
-const GICS = require("../lib/GICS"),
+const GICS = require("../src/GICS"),
 	chai = require("chai"),
 	expect = require("chai").expect,
 	chaiThings = require("chai-things");
