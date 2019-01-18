@@ -3,7 +3,8 @@
 const definitions = {
 	"20140228": require("../definitions/20140228"),
 	"20160901": require("../definitions/20160901"),
-	"default": require("../definitions/20160901")
+	"20180929": require("../definitions/20180929"),
+	"default": require("../definitions/20180929")
 }
 
 class GICS {
@@ -17,7 +18,7 @@ class GICS {
 	 * @param      {string}  code     GICS code to parse. Valid GICS codes are strings 2 to 8 characters long, with even length.
 	 * @param      {string}  version  Version of GICS definition to use. By default the latest definition is used.
 	 * 																Versions are named after the date in which they became effective, following the format YYYYMMDD.
-	 * 																Current available versions are: 20140228 and 20160901 (default).
+	 * 																Current available versions are: 20140228 and 20160901 and 20180929 (default).
 	 * @throws     {Error} 						Throws error if the version is invalid/unsupported.
 	 */
 	constructor(code, version) {

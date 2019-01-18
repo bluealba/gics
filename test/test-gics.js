@@ -200,4 +200,12 @@ describe("GICS", function() {
 		new GICS("invalid").isImmediateWithin(new GICS("invalid")).should.be.false;
 	});
 
+	it("defaults to latest definition", function() {
+		let gicsDeprecated = new GICS("45101010");
+		let gicsNew = new GICS("50203010");
+		gicsDeprecated.isValid.should.be.false;
+		gicsNew.isValid.should.be.true;
+		gicsNew.subIndustry.name.should.equal("Interactive Media & Services");
+	});
+
 });
