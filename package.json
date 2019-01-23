@@ -1,6 +1,6 @@
 {
   "name": "gics",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "A Javascript library to parse and manipulate GICS codes",
   "main": "index.js",
   "scripts": {
