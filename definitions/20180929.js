@@ -318,7 +318,7 @@ module.exports = {
 			"description": "Drilling contractors or owners of drilling rigs that contract their services for drilling wells"
 	},
 	"10101020": {
-			"name": "Oil& Gas Equipment & Services",
+			"name": "Oil & Gas Equipment & Services",
 			"description": "Manufacturers of equipment, including drilling rigs and equipment, and providers of supplies and services to companies involved in the drilling, evaluation and completion of oil and gas wells."
 	},
 	"10102010": {
