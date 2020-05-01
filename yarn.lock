@@ -1089,9 +1089,9 @@ cross-spawn@^6.0.5:
     which "^1.2.9"
 
 csv-parse@^4.8.2:
-  version "4.8.2"
-  resolved "https://registry.yarnpkg.com/csv-parse/-/csv-parse-4.8.2.tgz#c717cc8d87f619dbd556d5a15222a83b6d7a6d06"
-  integrity sha512-WfYwyJepTbjS5jWAWpVskOJ8Z10231HaFw6qJhSjGrpfMPf3yuoRohlasYsP/6/3YgTQcvZpTvoUo37eaei9Fw==
+  version "4.9.0"
+  resolved "https://registry.yarnpkg.com/csv-parse/-/csv-parse-4.9.0.tgz#a947c66d8ab31207f4933170064dd8268c511e99"
+  integrity sha512-SaFMvRWzobY9z0Nxg+q5pXvU2JY7p++icb1Bb/ZwGSLv058cLabhGg3YNpLPI2KALtZnoe/oNBCfWX9xgTkcaA==
 
 dashdash@^1.12.0:
   version "1.14.1"
