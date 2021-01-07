@@ -247,8 +247,12 @@ new GICS("10").containsImmediate(new GICS("invalid")); // false
 new GICS("invalid").containsImmediate(new GICS("invalid")); // false
 ```
 
-
-
+### findChild(childName)
+#### Description
+Gets the gics definition for the sublevel of this GICS object matching the provided name. Lookup is done wide-first
+```
+@param {string}  childName  Name of the child GICS level to find.
+```
 
 
 
