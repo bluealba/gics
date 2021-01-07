@@ -208,4 +208,34 @@ describe("GICS", function() {
 		gicsNew.subIndustry.name.should.equal("Interactive Media & Services");
 	});
 
+	it("finds Health Care sector code", function() {
+		const parent = new GICS();
+
+		const industryGICS = parent.findChild("Health Care");
+		industryGICS.code.should.equal("35");
+	});
+
+	it("finds Pharmaceuticals industry code", function() {
+		const parent = new GICS();
+
+		const sectorGICS = parent.findChild("Pharmaceuticals");
+		sectorGICS.code.should.equal("352020");
+	});
+
+	it("finds Industry only among Sector children", function() {
+		const healthCareSector = new GICS("35");
+		const pharmaIndustry = healthCareSector.findChild("Pharmaceuticals");
+		pharmaIndustry.code.should.equal("352020");
+
+		const energySector = new GICS("10");
+		const notFound = energySector.findChild("Pharmaceuticals");
+		expect(notFound).to.be.null
+	});
+
+	it("if not found then it returns null", function() {
+		const parent = new GICS();
+
+		const notFound = parent.findChild("Non-Existent");
+		expect(notFound).to.be.null
+	});
 });

@@ -108,7 +108,21 @@ class GICS {
 	 * @return     {array} Array containing objects with properties code (the GICS code), name (the name of this GICS), and description (where applicable)
 	 */
 	get children() {
-		let keys = this.isValid ? Object.keys(this._definition).filter(k => k.startsWith(this._code) && k.length === this._code.length + 2) : Object.keys(this._definition).filter(k => k.length === 2);
+		return this.getChildren(1)
+	}
+
+	/**
+	 * Gets all the child level elements from this GICS level at a depth distance of `depth`
+	 * For example, for a Sector level GICS, it will return all Industry Groups in that Sector if `depth = 1` and
+	 * all SubIndustry Groups in that Sector if `depth = 2`.
+	 * If the GICS is invalid (or empty, as with a null code), it will return all Sectors.
+	 *
+	 * @return     {array} Array containing objects with properties code (the GICS code), name (the name of this GICS), and description (where applicable)
+	 */
+	getChildren(depth = 1) {
+		const keys = this.isValid
+			? Object.keys(this._definition).filter(k => k.startsWith(this._code) && level(this._code) + depth === level(k))
+			: Object.keys(this._definition).filter(k => level(k) === depth);
 		return keys.map(k => ({
 			code: k,
 			name: this._definition[k].name,
@@ -171,6 +185,27 @@ class GICS {
 	containsImmediate(anotherGics) {
 		return anotherGics.isImmediateWithin(this);
 	}
+
+	/**
+	 * Gets the gics definition for the sublevel of this GICS object matching the provided name. Lookup is done wide-first
+	 *
+	 * @param {string}  childName  Name of the child GICS level to find.
+	 */
+	findChild(childName) {
+		const findDeep = (depth) => {
+			const children = this.getChildren(depth);
+			if (children.length === 0) return null;
+
+			const child = children.find(child => child.name === childName);
+			return child || findDeep(depth + 1);
+		};
+
+		return findDeep(1);
+	}
+}
+
+function level(gicsCode) {
+	return gicsCode ? Math.floor(gicsCode.length / 2) : 0;
 }
 
 module.exports = GICS;
