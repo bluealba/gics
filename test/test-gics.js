@@ -208,4 +208,17 @@ describe("GICS", function() {
 		gicsNew.subIndustry.name.should.equal("Interactive Media & Services");
 	});
 
+	it("finds Health Care sector code", function() {
+		const parent = new GICS();
+
+		const industryGICS = parent.findChildren("Health Care");
+		industryGICS.should.equal("35");
+	});
+
+	it("finds Pharmaceuticals industry code", function() {
+		const parent = new GICS();
+
+		const sectorGICS = parent.findChildren("Pharmaceuticals");
+		sectorGICS.should.equal("352020");
+	});
 });

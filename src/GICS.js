@@ -171,6 +171,26 @@ class GICS {
 	containsImmediate(anotherGics) {
 		return anotherGics.isImmediateWithin(this);
 	}
+
+	/**
+	 * Get the code value of the given GICS name searching in every level of the GICS array
+	 *
+	 * @param      {string}  levelName  Name of GICS to get it's code.
+	 */
+	findChildren(levelName) {
+		const gicsArray = this.children;
+
+		const find = (gicsArray, levelName) =>
+			gicsArray.reduce((acc, item) => {
+				if (acc) return acc;
+				if (item.name == levelName) return item.code;
+				const newGicsArray = new GICS(item.code).children;
+				if (newGicsArray && newGicsArray.length)
+					return find(newGicsArray, levelName);
+			}, null);
+
+		return find(gicsArray, levelName);
+	}
 }
 
 module.exports = GICS;
