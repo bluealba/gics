@@ -4,7 +4,8 @@ const definitions = {
 	"20140228": require("../definitions/20140228"),
 	"20160901": require("../definitions/20160901"),
 	"20180929": require("../definitions/20180929"),
-	"default": require("../definitions/20180929")
+	"20230318": require("../definitions/20230318"),
+	"default": require("../definitions/20230318")
 }
 
 class GICS {
