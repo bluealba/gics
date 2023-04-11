@@ -5,51 +5,133 @@ const definitions = {
 	"20160901": require("../definitions/20160901"),
 	"20180929": require("../definitions/20180929"),
 	"20230318": require("../definitions/20230318"),
-	"default": require("../definitions/20230318")
-}
+	"default": require("../definitions/20230318"),
+};
 
+const versions = Object.keys(definitions).filter((key) => key !== "default");
 class GICS {
-
 	/**
 	 * Represents a GICS code. You can instantiate GICS codes using a string representing a code.
- 	 * The string has to be a valid GICS. If it's not, that isValid method will return false.
+	 * The string has to be a valid GICS. If it's not, that isValid method will return false.
 	 * Note that creating an empty GICS will mark it as invalid but can still be used to query the definitions (although that object itself will not be a definition)
 	 *
 	 * @class      GICS GICS
 	 * @param      {string}  code     GICS code to parse. Valid GICS codes are strings 2 to 8 characters long, with even length.
 	 * @param      {string}  version  Version of GICS definition to use. By default the latest definition is used.
 	 * 																Versions are named after the date in which they became effective, following the format YYYYMMDD.
-	 * 																Current available versions are: 20140228 and 20160901 and 20180929 (default).
-	 * @throws     {Error} 						Throws error if the version is invalid/unsupported.
+	 * 																Current available versions are: 20140228 , 20160901 , 20180929 and 20230318 (default). If no specific version
+	 * 																is provided, will default to latest version.
+	 *  @param      {object}  options     options for GICS including 
+	 * 																fallbackLookup (boolean): defaulted as false, when true if no GICS code is found in selected version, looks back into previous versions until the first one
+	 * 																exactMatch (boolean): defaulted as true, when if no GICS code is found, returns the longest part of the code available in current version
+	 * 																asOf (Date) :  default is current date, will use the GICS version as of given date. Takes precedence over fallbackLookup
 	 */
-	constructor(code, version) {
+	constructor(
+		code,
+		version,
+		options = { fallbackLookup: false, exactMatch: true, asOf: new Date() }
+	) {
+		this.asOf = options.asOf || new Date();
 		let defName = version || "default";
+		// selects the closest version (in time) to asOf date
+		defName = getVersionAsOf(this.asOf, versions, version);
+
+		this.fallbackLookup = options.fallbackLookup || false;
+		// forces exactMatch to be true if fallbackLookup is on since if not it will return a partial code
+		this.exactMatch = this.fallbackLookup ? true : options.exactMatch;
 		this._definitionVersion = defName;
+
 		if (!this._definition) {
-			throw new Error(`Unsupported GICS version: ${version}. Available versions are ${Object.keys(definitions)}`);
+			throw new Error(
+				`Unsupported GICS version: ${version}. Available versions are ${Object.keys(
+					definitions
+				)}`
+			);
 		}
+
 		this._code = code;
-		this.isValid = code && typeof(code) === "string" && code.length >= 2 && code.length <= 8 && code.length % 2 === 0 && this._definition[code] ? true : false;
+		// Check if code is valid depending if exactMatch is true or not
+		this.isValid = this._validateCode();
 		if (this.isValid) {
 			this._levels = [
 				this._getDefinition(code.slice(0, 2)),
 				code.length >= 4 ? this._getDefinition(code.slice(0, 4)) : null,
 				code.length >= 6 ? this._getDefinition(code.slice(0, 6)) : null,
-				code.length === 8 ? this._getDefinition(code.slice(0, 8)) : null
+				code.length === 8 ? this._getDefinition(code.slice(0, 8)) : null,
 			];
+		} else if (
+			this.fallbackLookup &&
+			new Date().valueOf() === this.asOf.valueOf()
+		) {
+			// Loops in all definitions to see if it can find one that the code is present
+			this._fallbackLookup();
 		} else {
 			this._code = null;
 		}
 	}
 
 	_getDefinition(gicsCode) {
-		let def = this._definition[gicsCode];
+		let def;
+		def = this._definition[gicsCode];
+		if (!def) return null;
 		def.code = gicsCode;
 		return def;
 	}
 
+	_fallbackLookup() {
+		// goes from newer to older
+		versions.reverse().forEach((version) => {
+			this._definitionVersion = version;
+			this.isValid = this._validateCode();
+			if (this.isValid) {
+				this._levels = [
+					this._getDefinition(this._code.slice(0, 2)),
+					this._code.length >= 4
+						? this._getDefinition(this._code.slice(0, 4))
+						: null,
+					this._code.length >= 6
+						? this._getDefinition(this._code.slice(0, 6))
+						: null,
+					this._code.length === 8
+						? this._getDefinition(this._code.slice(0, 8))
+						: null,
+				];
+				this.isValid = true;
+				return;
+			}
+		});
+		if (!this.isValid) this._code = null;
+	}
+
 	get _definition() {
 		return definitions[this._definitionVersion];
+	}
+
+	_findBestMatch(code) {
+		return (
+			this._definition[code] ||
+			this._definition[code.slice(0, 6)] ||
+			this._definition[code.slice(0, 4)] ||
+			this._definition[code.slice(0, 2)] ||
+			false
+		);
+	}
+
+	_validateCode() {
+		const code = this._code;
+		const exactMatch = this.exactMatch;
+		const codeValidation =
+			code &&
+			code.length >= 2 &&
+			code.length <= 8 &&
+			typeof code === "string" &&
+			code.length % 2 === 0;
+
+		if (exactMatch) {
+			return codeValidation && this._definition[code] ? true : false;
+		} else {
+			return codeValidation && this._findBestMatch(code) ? true : false;
+		}
 	}
 
 	/**
@@ -58,7 +140,13 @@ class GICS {
 	 * @param      {number}  gicsLevel  Level of GICS to get. Valid levels are: 1 (Sector), 2 (Industry Group), 3 (Industry), 4 (Sub-Industry)
 	 */
 	level(gicsLevel) {
-		if (!this.isValid || !gicsLevel || typeof(gicsLevel) !== "number" || gicsLevel < 1 || gicsLevel > 4) {
+		if (
+			!this.isValid ||
+			!gicsLevel ||
+			typeof gicsLevel !== "number" ||
+			gicsLevel < 1 ||
+			gicsLevel > 4
+		) {
 			return null;
 		}
 		return this._levels[gicsLevel - 1];
@@ -109,7 +197,7 @@ class GICS {
 	 * @return     {array} Array containing objects with properties code (the GICS code), name (the name of this GICS), and description (where applicable)
 	 */
 	get children() {
-		return this.getChildren(1)
+		return this.getChildren(1);
 	}
 
 	/**
@@ -122,12 +210,14 @@ class GICS {
 	 */
 	getChildren(depth = 1) {
 		const keys = this.isValid
-			? Object.keys(this._definition).filter(k => k.startsWith(this._code) && level(this._code) + depth === level(k))
-			: Object.keys(this._definition).filter(k => level(k) === depth);
-		return keys.map(k => ({
+			? Object.keys(this._definition).filter(
+				(k) =>
+					k.startsWith(this._code) && level(this._code) + depth === level(k))
+			: Object.keys(this._definition).filter((k) => level(k) === depth);
+		return keys.map((k) => ({
 			code: k,
 			name: this._definition[k].name,
-			description: this._definition[k].description
+			description: this._definition[k].description,
 		}));
 	}
 
@@ -139,7 +229,11 @@ class GICS {
 	 * @param      {object}  anotherGics  GICS object to compare with
 	 */
 	isSame(anotherGics) {
-		return anotherGics && (this.isValid === anotherGics.isValid) && (this.isValid === false || this._code === anotherGics._code);
+		return (
+			anotherGics &&
+			this.isValid === anotherGics.isValid &&
+			(this.isValid === false || this._code === anotherGics._code)
+		);
 	}
 
 	/**
@@ -150,8 +244,12 @@ class GICS {
 	 * @param      {GICS}  anotherGics  GICS object to compare with
 	 */
 	isWithin(anotherGics) {
-		return this.isValid && anotherGics.isValid && this._code !== anotherGics._code && this._code.startsWith(anotherGics._code);
-
+		return (
+			this.isValid &&
+			anotherGics.isValid &&
+			this._code !== anotherGics._code &&
+			this._code.startsWith(anotherGics._code)
+		);
 	}
 
 	/**
@@ -162,7 +260,13 @@ class GICS {
 	 * @param      {GICS}  anotherGics  GICS object to compare with
 	 */
 	isImmediateWithin(anotherGics) {
-		return this.isValid && anotherGics.isValid && this._code !== anotherGics._code && this._code.startsWith(anotherGics._code) && this._code.length === anotherGics._code.length + 2;
+		return (
+			this.isValid &&
+			anotherGics.isValid &&
+			this._code !== anotherGics._code &&
+			this._code.startsWith(anotherGics._code) &&
+			this._code.length === anotherGics._code.length + 2
+		);
 	}
 
 	/**
@@ -197,7 +301,7 @@ class GICS {
 			const children = this.getChildren(depth);
 			if (children.length === 0) return null;
 
-			const child = children.find(child => child.name === childName);
+			const child = children.find((child) => child.name === childName);
 			return child || findDeep(depth + 1);
 		};
 
@@ -209,5 +313,28 @@ function level(gicsCode) {
 	return gicsCode ? Math.floor(gicsCode.length / 2) : 0;
 }
 
-module.exports = GICS;
+const getVersionAsOf = (date, versions, version) => {
+	if (versions.includes(version)) {
+		return version;
+	}
+	let currentVersion = versions[0];
 
+	for (const version of versions) {
+		const versionValue = versionToDate(version).valueOf();
+		if (versionValue >= date.valueOf()) break;
+		currentVersion = version;
+	}
+	return currentVersion;
+};
+
+const versionToDate = (version) => {
+	if (version === "default") {
+		version = "20230318";
+	}
+	const year = Number(version.slice(0, 4));
+	const month = Number(version.slice(4, 6)) - 1; // month starts with 0
+	const day = Number(version.slice(6, 8));
+	return new Date(year, month, day);
+};
+
+module.exports = GICS;
