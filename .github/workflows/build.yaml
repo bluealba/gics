@@ -5,5 +5,5 @@ on:
 jobs:
   build:
     name: Build and publish a public NPM package
-    uses: bluealba/workflows/.github/workflows/public-package-build-test-release-yarn.yml@main
+    uses: bluealba/workflows-public/.github/workflows/public-package-build-test-release-yarn.yml@main
     secrets: inherit
