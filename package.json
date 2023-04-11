@@ -35,5 +35,8 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/bluealba/gics"
+  },
+  "engines": {
+    "node": "8.17.0"
   }
 }

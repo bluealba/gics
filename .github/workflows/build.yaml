@@ -1,0 +1,9 @@
+name: Build and publish a public NPM package
+on: 
+  push:
+
+jobs:
+  build:
+    name: Build and publish a public NPM package
+    uses: bluealba/workflows/.github/workflows/public-package-build-test-release-yarn.yml@main
+    secrets: inherit
