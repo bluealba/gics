@@ -1,6 +1,5 @@
 # GICS
 
-
 [![Build and publish a public NPM package](https://github.com/bluealba/gics/actions/workflows/build.yaml/badge.svg)](https://github.com/bluealba/gics/actions/workflows/build.yaml)
 [![npm](https://img.shields.io/npm/v/gics.svg)](https://npmjs.org/package/gics)
 [![npm](https://img.shields.io/npm/dt/gics.svg)](https://npmjs.org/package/gics)
