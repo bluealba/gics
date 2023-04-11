@@ -1,5 +1,6 @@
 # GICS
 
+
 [![Build Status](https://travis-ci.org/bluealba/gics.svg?branch=master)](https://travis-ci.org/bluealba/gics)
 [![npm](https://img.shields.io/npm/v/gics.svg)](https://npmjs.org/package/gics)
 [![npm](https://img.shields.io/npm/dt/gics.svg)](https://npmjs.org/package/gics)
