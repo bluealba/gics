@@ -1,6 +1,7 @@
 # GICS
 
-[![Build Status](https://travis-ci.org/bluealba/gics.svg?branch=master)](https://travis-ci.org/bluealba/gics)
+
+[![Build and publish a public NPM package](https://github.com/bluealba/gics/actions/workflows/build.yaml/badge.svg)](https://github.com/bluealba/gics/actions/workflows/build.yaml)
 [![npm](https://img.shields.io/npm/v/gics.svg)](https://npmjs.org/package/gics)
 [![npm](https://img.shields.io/npm/dt/gics.svg)](https://npmjs.org/package/gics)
 [![Coverage Status](https://coveralls.io/repos/github/bluealba/gics/badge.svg?branch=master)](https://coveralls.io/github/bluealba/gics?branch=master)
