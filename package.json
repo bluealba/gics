@@ -1,6 +1,6 @@
 {
   "name": "gics",
-  "version": "3.0.0",
+  "version": "3.0.2",
   "description": "A Javascript library to parse and manipulate GICS codes",
   "main": "index.js",
   "scripts": {
@@ -20,6 +20,9 @@
   ],
   "author": "Gunther Schneider <gunther.schneider@bluealba.com>",
   "license": "ISC",
+  "engines" : { 
+    "node" : ">=8.0.0" 
+  },
   "devDependencies": {
     "babel": "^6.23.0",
     "babel-cli": "^6.26.0",
