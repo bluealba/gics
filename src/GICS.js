@@ -1,18 +1,17 @@
 "use strict";
 
 const definitions = {
-	"20140228": require("../definitions/20140228"),
-	"20160901": require("../definitions/20160901"),
-	"20180929": require("../definitions/20180929"),
-	"20230318": require("../definitions/20230318"),
-	"default": require("../definitions/20230318")
-}
+	20140228: require("../definitions/20140228"),
+	20160901: require("../definitions/20160901"),
+	20180929: require("../definitions/20180929"),
+	20230318: require("../definitions/20230318"),
+	default: require("../definitions/20230318"),
+};
 
 class GICS {
-
 	/**
 	 * Represents a GICS code. You can instantiate GICS codes using a string representing a code.
- 	 * The string has to be a valid GICS. If it's not, that isValid method will return false.
+	 * The string has to be a valid GICS. If it's not, that isValid method will return false.
 	 * Note that creating an empty GICS will mark it as invalid but can still be used to query the definitions (although that object itself will not be a definition)
 	 *
 	 * @class      GICS GICS
@@ -26,16 +25,28 @@ class GICS {
 		let defName = version || "default";
 		this._definitionVersion = defName;
 		if (!this._definition) {
-			throw new Error(`Unsupported GICS version: ${version}. Available versions are ${Object.keys(definitions)}`);
+			throw new Error(
+				`Unsupported GICS version: ${version}. Available versions are ${Object.keys(
+					definitions
+				)}`
+			);
 		}
 		this._code = code;
-		this.isValid = code && typeof(code) === "string" && code.length >= 2 && code.length <= 8 && code.length % 2 === 0 && this._definition[code] ? true : false;
+		this.isValid =
+			code &&
+			typeof code === "string" &&
+			code.length >= 2 &&
+			code.length <= 8 &&
+			code.length % 2 === 0 &&
+			this._definition[code]
+				? true
+				: false;
 		if (this.isValid) {
 			this._levels = [
 				this._getDefinition(code.slice(0, 2)),
 				code.length >= 4 ? this._getDefinition(code.slice(0, 4)) : null,
 				code.length >= 6 ? this._getDefinition(code.slice(0, 6)) : null,
-				code.length === 8 ? this._getDefinition(code.slice(0, 8)) : null
+				code.length === 8 ? this._getDefinition(code.slice(0, 8)) : null,
 			];
 		} else {
 			this._code = null;
@@ -58,7 +69,13 @@ class GICS {
 	 * @param      {number}  gicsLevel  Level of GICS to get. Valid levels are: 1 (Sector), 2 (Industry Group), 3 (Industry), 4 (Sub-Industry)
 	 */
 	level(gicsLevel) {
-		if (!this.isValid || !gicsLevel || typeof(gicsLevel) !== "number" || gicsLevel < 1 || gicsLevel > 4) {
+		if (
+			!this.isValid ||
+			!gicsLevel ||
+			typeof gicsLevel !== "number" ||
+			gicsLevel < 1 ||
+			gicsLevel > 4
+		) {
 			return null;
 		}
 		return this._levels[gicsLevel - 1];
@@ -109,7 +126,7 @@ class GICS {
 	 * @return     {array} Array containing objects with properties code (the GICS code), name (the name of this GICS), and description (where applicable)
 	 */
 	get children() {
-		return this.getChildren(1)
+		return this.getChildren(1);
 	}
 
 	/**
@@ -122,12 +139,15 @@ class GICS {
 	 */
 	getChildren(depth = 1) {
 		const keys = this.isValid
-			? Object.keys(this._definition).filter(k => k.startsWith(this._code) && level(this._code) + depth === level(k))
-			: Object.keys(this._definition).filter(k => level(k) === depth);
-		return keys.map(k => ({
+			? Object.keys(this._definition).filter(
+					(k) =>
+						k.startsWith(this._code) && level(this._code) + depth === level(k)
+			  )
+			: Object.keys(this._definition).filter((k) => level(k) === depth);
+		return keys.map((k) => ({
 			code: k,
 			name: this._definition[k].name,
-			description: this._definition[k].description
+			description: this._definition[k].description,
 		}));
 	}
 
@@ -139,7 +159,11 @@ class GICS {
 	 * @param      {object}  anotherGics  GICS object to compare with
 	 */
 	isSame(anotherGics) {
-		return anotherGics && (this.isValid === anotherGics.isValid) && (this.isValid === false || this._code === anotherGics._code);
+		return (
+			anotherGics &&
+			this.isValid === anotherGics.isValid &&
+			(this.isValid === false || this._code === anotherGics._code)
+		);
 	}
 
 	/**
@@ -150,8 +174,12 @@ class GICS {
 	 * @param      {GICS}  anotherGics  GICS object to compare with
 	 */
 	isWithin(anotherGics) {
-		return this.isValid && anotherGics.isValid && this._code !== anotherGics._code && this._code.startsWith(anotherGics._code);
-
+		return (
+			this.isValid &&
+			anotherGics.isValid &&
+			this._code !== anotherGics._code &&
+			this._code.startsWith(anotherGics._code)
+		);
 	}
 
 	/**
@@ -162,7 +190,13 @@ class GICS {
 	 * @param      {GICS}  anotherGics  GICS object to compare with
 	 */
 	isImmediateWithin(anotherGics) {
-		return this.isValid && anotherGics.isValid && this._code !== anotherGics._code && this._code.startsWith(anotherGics._code) && this._code.length === anotherGics._code.length + 2;
+		return (
+			this.isValid &&
+			anotherGics.isValid &&
+			this._code !== anotherGics._code &&
+			this._code.startsWith(anotherGics._code) &&
+			this._code.length === anotherGics._code.length + 2
+		);
 	}
 
 	/**
@@ -197,7 +231,7 @@ class GICS {
 			const children = this.getChildren(depth);
 			if (children.length === 0) return null;
 
-			const child = children.find(child => child.name === childName);
+			const child = children.find((child) => child.name === childName);
 			return child || findDeep(depth + 1);
 		};
 
@@ -210,4 +244,3 @@ function level(gicsCode) {
 }
 
 module.exports = GICS;
-
