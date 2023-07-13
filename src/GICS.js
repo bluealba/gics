@@ -142,7 +142,7 @@ class GICS {
 			? Object.keys(this._definition).filter(
 					(k) =>
 						k.startsWith(this._code) && level(this._code) + depth === level(k)
-			  )
+				)
 			: Object.keys(this._definition).filter((k) => level(k) === depth);
 		return keys.map((k) => ({
 			code: k,
